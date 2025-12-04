@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
 import type { FormEvent } from 'react';
-import type { UserData, GoogleCredentialResponse } from '@/lib/types';
-import { useGoogleAuth } from '@/hooks/useGoogleAuth';
-import { extractUserDataFromCredential } from '@/lib/services/googleAuthService';
+import type { UserData } from '@/lib/types';
 import { sendToGoogleSheets } from '@/lib/services/sheetsService';
-import { escapeHtml } from '@/utils/security';
 
 interface StepRegistrateProps {
   onNext: (userData: UserData) => void;
   clientId: string;
   sheetsUrl: string;
 }
+
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0LSG9bUq8iH4cxf5GTFfWgrWMBu2LiES0o2IVuFqfX_ez_moMs0mXtTkO8TRO3Mrmvw/exec';
 
 export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegistrateProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,23 +27,39 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
     }
   }, [registeredUser]);
 
-  const { login } = useGoogleAuth({
-    clientId,
-    onSuccess: handleGoogleResponse,
-  });
+  // Hook de Google OAuth - mucho más simple!
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Obtener la información del usuario usando el access token
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
 
-  function handleGoogleResponse(response: GoogleCredentialResponse) {
-    const userData = extractUserDataFromCredential(response);
-    if (userData) {
-      handleUserRegistration(userData);
-    }
-  }
+        const userInfo = await userInfoResponse.json();
+
+        const userData: UserData = {
+          nombre: userInfo.given_name || '',
+          apellido: userInfo.family_name || '',
+          email: userInfo.email || '',
+        };
+
+        handleUserRegistration(userData);
+      } catch (error) {
+        console.error('Error obteniendo información del usuario:', error);
+        alert('Hubo un error al obtener tus datos de Google. Por favor, intenta nuevamente.');
+      }
+    },
+    onError: () => {
+      alert('Error al iniciar sesión con Google. Por favor, intenta nuevamente.');
+    },
+  });
 
   async function handleUserRegistration(data: UserData) {
     setIsLoading(true);
 
     try {
-      await sendToGoogleSheets(data, sheetsUrl);
+      await sendToGoogleSheets(data, GOOGLE_SHEETS_URL);
       setIsLoading(false);
 
       setTimeout(() => {
@@ -85,7 +101,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
 
       <div className='max-w-[250px] md:max-w-[288px] m-auto'>
         <button
-          onClick={login}
+          onClick={() => googleLogin()}
           className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
         >
           <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
