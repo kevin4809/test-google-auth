@@ -1,0 +1,11 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import RegistroWizard from '@/components/auth/RegistroWizard';
+
+const GOOGLE_CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID;
+const GOOGLE_SHEETS_URL = import.meta.env.PUBLIC_GOOGLE_SHEETS_URL;
+---
+
+<Layout title='Participa'>
+  <RegistroWizard client:load clientId={GOOGLE_CLIENT_ID} sheetsUrl={GOOGLE_SHEETS_URL} />
+</Layout>

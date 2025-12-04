@@ -1,0 +1,62 @@
+---
+const socialNetworks = [
+  {
+    name: 'Instagram',
+    icon: '/assets/social/instagram.svg',
+    url: '#',
+  },
+  {
+    name: 'TikTok',
+    icon: '/assets/social/tick-tock.svg',
+    url: '#',
+  },
+  {
+    name: 'Facebook',
+    icon: '/assets/social/facebook.svg',
+    url: '#',
+  },
+  {
+    name: 'YouTube',
+    icon: '/assets/social/youtube.svg',
+    url: '#',
+  },
+];
+---
+
+<footer class='pt-[40px] pb-[40px]'>
+  <div class='container_all md:flex md:items-center md:justify-between '>
+    <div class='md:order-2'>
+      <p class='text-center text-[20px] leading-[22px] tracking-[0.4px] uppercase md:text-start md:text-[26px md:leading-[30px] md:max-w-[380px]'>
+        El parche no termina aquí. Síguelo en redes.
+      </p>
+
+      <div class='flex justify-center items-center gap-[24px] md:justify-start'>
+        {
+          socialNetworks.map((social) => (
+            <a
+              href={social.url}
+              target='_blank'
+              rel='noopener noreferrer'
+              class='transition-transform hover:scale-110 duration-200'
+              aria-label={social.name}
+            >
+              <img src={social.icon} alt={`${social.name} icon`} class='w-6 h-6 my-8' />
+            </a>
+          ))
+        }
+      </div>
+      <div class='text-center md:text-start'>
+        <a class='text-[16px] tracking-[0.32px] font-mono' href='#'>Política de Privacidad</a>
+      </div>
+
+      <div class='text-center mt-[16px] md:text-start'>
+        <a class='text-[16px] tracking-[0.32px] font-mono' href='#'>Términos y Condiciones</a>
+      </div>
+    </div>
+
+    <div class='md:order-1'>
+      <img class='m-auto py-8 w-[192px] md:m-0 md:w-[351px]' src='/assets/logo.svg' alt='logo' />
+      <p class='text-[16px] text-center font-mono tracking-[0.32px]'>© 2025 FM Entretenimiento. All rights reserved</p>
+    </div>
+  </div>
+</footer>

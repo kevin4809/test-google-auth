@@ -1,8 +1,28 @@
 ---
-import GoogleLogin from '../components/GoogleLogin.astro';
+import Buttons from '@/components/common/Buttons.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
-	<GoogleLogin />
+<Layout title='Home'>
+  <h1 class='text-center text-[50px] leading-[50px] tracking-[2px] uppercase mt-[41px] md:hidden'>Vive Una y Mil Noches</h1>
+
+  <h1 class='text-center leading-[70px] text-[72px] uppercase md:block mt-[70px] hidden'>
+    Vive Una y Mil Noches <br /> de parche con alejo
+  </h1>
+
+  <p class='text-[28px] font-mono text-center mt-[22px] hidden md:block'>
+    Participa por una serenata privada con Alejo y dedica Una y Mil Noches a quien tú quieras.
+  </p>
+
+  <div class='my-4 md:mb-[104px] md:mt-[54px] relative'>
+    <img class='w-full max-h-[396px] object-cover' src='/public/assets/una_y_mil_noches.webp' alt='una y mil noches' />
+    <div class='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+      <Buttons href='/participa'> Participa </Buttons>
+    </div>
+  </div>
+
+  <h2 class='text-center text-[50px] leading-[50px] tracking-[2px] uppercase mt-[41px] md:hidden'>de parche con Alejo</h2>
+  <p class='text-center text-[16px] leading-normal tracking-[0.32px] mt-[22px] font-mono pb-[47px] md:hidden'>
+    Participa por una serenata privada con Alejo y dedica Una y Mil Noches a quien tú quieras.
+  </p>
 </Layout>

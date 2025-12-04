@@ -1,0 +1,307 @@
+<div class="auth-container">
+	<h2>Registro</h2>
+
+	<!-- Botón de Google -->
+	<div class="google-section">
+		<h3>Con Google</h3>
+		<div id="buttonDiv"></div>
+	</div>
+
+	<!-- Divisor -->
+	<div class="divider">
+		<span>o</span>
+	</div>
+
+	<!-- Formulario nativo -->
+	<div class="native-form-section">
+		<h3>Registro manual</h3>
+		<form id="native-form">
+			<div class="form-group">
+				<label for="nombre">Nombre</label>
+				<input type="text" id="nombre" name="nombre" required placeholder="Tu nombre" autocomplete="given-name">
+			</div>
+			<div class="form-group">
+				<label for="apellido">Apellido</label>
+				<input type="text" id="apellido" name="apellido" required placeholder="Tu apellido" autocomplete="family-name">
+			</div>
+			<div class="form-group">
+				<label for="email">Correo electrónico</label>
+				<input type="email" id="email" name="email" required placeholder="tu@email.com" autocomplete="email">
+			</div>
+			<button type="submit" class="submit-btn">Registrarse</button>
+		</form>
+	</div>
+
+	<!-- Área para mostrar los datos del usuario -->
+	<div id="user-info" class="hidden">
+		<h3>Registro exitoso</h3>
+		<div id="user-data"></div>
+	</div>
+
+	<!-- Mensaje de loading -->
+	<div id="loading-message" class="hidden">
+		<p>Guardando información...</p>
+	</div>
+</div>
+
+<script>
+	import type { UserData, GoogleCredentialResponse } from '@/lib/types';
+	import { initElements, hideElements, showElement } from '@/utils/dom';
+	import { escapeHtml } from '@/utils/security';
+	import { loadGoogleSDK, initializeGoogleSignIn, extractUserDataFromCredential } from '@/lib/services/googleAuthService';
+	import { sendToGoogleSheets } from '@/lib/services/sheetsService';
+
+	const GOOGLE_CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID;
+	const GOOGLE_SHEETS_URL = import.meta.env.PUBLIC_GOOGLE_SHEETS_URL;
+
+	// Inicializar cache de elementos del DOM
+	const elements = initElements();
+
+	// Manejar la respuesta de credenciales de Google
+	function handleCredentialResponse(response: GoogleCredentialResponse): void {
+		const userData = extractUserDataFromCredential(response);
+
+		if (userData) {
+			handleUserRegistration(userData);
+		}
+	}
+
+	// Manejar el registro de usuario (común para Google y formulario nativo)
+	async function handleUserRegistration(data: UserData): Promise<void> {
+		if (!elements.loadingMessage) return;
+
+		// Mostrar mensaje de loading
+		showElement(elements.loadingMessage);
+
+		try {
+			await sendToGoogleSheets(data, GOOGLE_SHEETS_URL);
+
+			// Ocultar loading ANTES de mostrar éxito
+			hideElements(elements.loadingMessage);
+
+			// Pequeño delay para transición suave
+			setTimeout(() => {
+				displayUserData(data);
+			}, 100);
+
+		} catch (error) {
+			console.error('Error al enviar datos:', error);
+			hideElements(elements.loadingMessage);
+			alert('Hubo un error al guardar tus datos. Por favor, intenta nuevamente.');
+		}
+	}
+
+	// Mostrar los datos del usuario después del registro exitoso
+	function displayUserData(data: UserData): void {
+		if (!elements.userInfo || !elements.userData) return;
+
+		// Sanitizar datos para prevenir XSS
+		const safeNombre = escapeHtml(data.nombre);
+		const safeApellido = escapeHtml(data.apellido);
+		const safeEmail = escapeHtml(data.email);
+
+		elements.userData.innerHTML = `
+			<p><strong>Nombre:</strong> ${safeNombre}</p>
+			<p><strong>Apellido:</strong> ${safeApellido}</p>
+			<p><strong>Correo:</strong> ${safeEmail}</p>
+		`;
+
+		// Mostrar mensaje de éxito y ocultar formularios
+		showElement(elements.userInfo);
+		hideElements(elements.googleSection, elements.divider, elements.nativeFormSection);
+	}
+
+	// Manejar el envío del formulario nativo
+	function handleFormSubmit(e: Event): void {
+		e.preventDefault();
+
+		const formData: UserData = {
+			nombre: (document.getElementById('nombre') as HTMLInputElement).value.trim(),
+			apellido: (document.getElementById('apellido') as HTMLInputElement).value.trim(),
+			email: (document.getElementById('email') as HTMLInputElement).value.trim()
+		};
+
+		// Validación básica
+		if (!formData.nombre || !formData.apellido || !formData.email) {
+			alert('Por favor, completa todos los campos');
+			return;
+		}
+
+		handleUserRegistration(formData);
+	}
+
+	// Función de inicialización de Google Sign In
+	function initGoogle(): void {
+		initializeGoogleSignIn(GOOGLE_CLIENT_ID, elements.buttonDiv, handleCredentialResponse);
+	}
+
+	// Inicialización cuando el DOM esté listo
+	function init(): void {
+		if (elements.nativeForm) {
+			elements.nativeForm.addEventListener('submit', handleFormSubmit);
+		}
+
+		// Cargar SDK de Google de forma optimizada
+		loadGoogleSDK(elements.buttonDiv, initGoogle);
+	}
+
+	// Ejecutar inicialización
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+</script>
+
+<style>
+	.auth-container {
+		max-width: 450px;
+		margin: 50px auto;
+		padding: 30px;
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	}
+
+	h2 {
+		text-align: center;
+		color: #333;
+		margin-bottom: 30px;
+		font-size: 24px;
+	}
+
+	h3 {
+		color: #555;
+		font-size: 16px;
+		margin-bottom: 15px;
+		text-align: center;
+	}
+
+	.google-section {
+		margin-bottom: 20px;
+	}
+
+	#buttonDiv {
+		display: flex;
+		justify-content: center;
+		margin: 20px 0;
+		min-height: 40px;
+	}
+
+	.divider {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin: 30px 0;
+	}
+
+	.divider::before,
+	.divider::after {
+		content: '';
+		flex: 1;
+		border-bottom: 1px solid #dadce0;
+	}
+
+	.divider span {
+		padding: 0 15px;
+		color: #999;
+		font-size: 14px;
+	}
+
+	.native-form-section {
+		margin-top: 20px;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-group label {
+		display: block;
+		margin-bottom: 8px;
+		color: #333;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	.form-group input {
+		width: 100%;
+		padding: 12px;
+		border: 1px solid #dadce0;
+		border-radius: 8px;
+		font-size: 14px;
+		transition: border-color 0.3s ease;
+		box-sizing: border-box;
+	}
+
+	.form-group input:focus {
+		outline: none;
+		border-color: #4285F4;
+	}
+
+	.submit-btn {
+		width: 100%;
+		padding: 12px 24px;
+		background-color: #4285F4;
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-size: 16px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.3s ease, transform 0.1s ease;
+		will-change: transform;
+	}
+
+	.submit-btn:hover {
+		background-color: #3367D6;
+	}
+
+	.submit-btn:active {
+		transform: scale(0.98);
+	}
+
+	#user-info {
+		margin-top: 30px;
+		padding: 20px;
+		background-color: #e8f5e9;
+		border-radius: 8px;
+		border-left: 4px solid #4caf50;
+	}
+
+	#user-info h3 {
+		margin-top: 0;
+		color: #2e7d32;
+		font-size: 18px;
+	}
+
+	#user-data p {
+		margin: 10px 0;
+		color: #555;
+		font-size: 14px;
+	}
+
+	#user-data strong {
+		color: #333;
+	}
+
+	#loading-message {
+		text-align: center;
+		padding: 20px;
+		background-color: #fff3e0;
+		border-radius: 8px;
+		margin-top: 20px;
+		border-left: 4px solid #ff9800;
+	}
+
+	#loading-message p {
+		margin: 0;
+		color: #e65100;
+		font-weight: 500;
+	}
+
+	/* Clase para ocultar elementos - mejor que inline styles */
+	.hidden {
+		display: none !important;
+	}
+</style>
