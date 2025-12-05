@@ -56,7 +56,7 @@ export default function ShareModal({ state, changeState, onNext }: { state: bool
 
   return (
     <div
-      className={`z-20 w-[95%] max-w-[631px] fixed bottom-0 -translate-y-1/2 md:-translate-y-[10vh] lg:-translate-y-[22vh]  left-1/2 -translate-x-1/2 bg-[url('/assets/background_footer.webp')] bg-cover bg-center bg-no-repeat rounded-[20px] px-[14.5px] 
+      className={`z-20 w-[95%] max-w-[631px] fixed bottom-0 -translate-y-1/2  md:-translate-y-[8vw]  left-1/2 -translate-x-1/2 bg-[url('/assets/background_footer.webp')] bg-cover bg-center bg-no-repeat rounded-[20px] px-[14.5px] 
      transition md:px-[20px] duration-500 ${!state ? 'translate-x-[130%] opacity-0' : ' translate-0 opacity-100'}`}
     >
       <img onClick={() => changeState(false)} className='ml-auto p-8 cursor-pointer' src='/assets/x.svg' alt='x' />
