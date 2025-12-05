@@ -1,10 +1,6 @@
-import type { UserData } from '@/lib/types';
+import Buttons from '@/components/common/Buttons';
 
-interface StepPreparateProps {
-  onBack: () => void;
-}
-
-export default function StepPreparate({ onBack }: StepPreparateProps) {
+export default function StepPreparate() {
   return (
     <div className='min-h-[50dvh]'>
       <p className='text-[48px] leading-[50px] uppercase text-center mt-[100px] md:text-[72px] md:leading-[70px] '>
@@ -27,9 +23,9 @@ export default function StepPreparate({ onBack }: StepPreparateProps) {
 
         <a
           href='/'
-          className='text-[16px] font-mono mt-[12px] border flex max-w-[280px] w-full md:text-[18px] border-light-cream md:mt-0 py-[10px] rounded-[50px] bg-[rgba(143,96,166,0.20)] flex justify-center items-center'
+          className='text-[16px] font-mono mt-[12px]  flex max-w-[280px] w-full md:text-[18px] md:mt-0 py-[10px] rounded-[50px] bg-[rgba(143,96,166,0.20)] flex justify-center items-center'
         >
-          Participar de nuevo
+          <Buttons customClass='w-full'>Participar de nuevo</Buttons>
         </a>
       </div>
     </div>

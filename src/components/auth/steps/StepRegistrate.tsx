@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, forwardRef } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import type { FormEvent } from 'react';
 import type { UserData } from '@/lib/types';
 import { sendToGoogleSheets } from '@/lib/services/sheetsService';
+import Buttons from '@/components/common/Buttons';
+import { validateEmail, validateLastName, validateName } from '@/utils/validatiors';
 
 interface StepRegistrateProps {
   onNext: (userData: UserData) => void;
@@ -21,17 +23,29 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
     email: '',
   });
 
+  const [formError, setFormError] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    terminos: '',
+    edad: '',
+  });
+
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptAge, setAcceptAge] = useState(false);
+
+  const terminosRef = useRef<HTMLDivElement>(null);
+  const edadRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (registeredUser) {
       onNext(registeredUser);
     }
   }, [registeredUser]);
 
-  // Hook de Google OAuth - mucho más simple!
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        // Obtener la información del usuario usando el access token
         const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
@@ -54,6 +68,37 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
       alert('Error al iniciar sesión con Google. Por favor, intenta nuevamente.');
     },
   });
+
+  function handleGoogleLogin() {
+    const terminosError = !acceptTerms ? 'Debes aceptar los términos y condiciones' : '';
+    const edadError = !acceptAge ? 'Debes certificar que tienes 18 años o más' : '';
+
+    if (terminosError || edadError) {
+      setFormError({
+        ...formError,
+        terminos: terminosError,
+        edad: edadError,
+      });
+
+      setTimeout(() => {
+        if (terminosError && terminosRef.current) {
+          terminosRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (edadError && edadRef.current) {
+          edadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
+      return;
+    }
+
+    setFormError({
+      ...formError,
+      terminos: '',
+      edad: '',
+    });
+
+    googleLogin();
+  }
 
   async function handleUserRegistration(data: UserData) {
     setIsLoading(true);
@@ -81,10 +126,39 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
       email: formData.email.trim(),
     };
 
-    if (!userData.nombre || !userData.apellido || !userData.email) {
-      alert('Por favor, completa todos los campos');
+    const nombreError = validateName(userData.nombre);
+    const apellidoError = validateLastName(userData.apellido);
+    const emailError = validateEmail(userData.email);
+    const terminosError = !acceptTerms ? 'Debes aceptar los términos y condiciones' : '';
+    const edadError = !acceptAge ? 'Debes certificar que tienes 18 años o más' : '';
+
+    if (nombreError || apellidoError || emailError || terminosError || edadError) {
+      setFormError({
+        nombre: nombreError || '',
+        apellido: apellidoError || '',
+        email: emailError || '',
+        terminos: terminosError,
+        edad: edadError,
+      });
+
+      setTimeout(() => {
+        if (terminosError && terminosRef.current) {
+          terminosRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (edadError && edadRef.current) {
+          edadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
       return;
     }
+
+    setFormError({
+      nombre: '',
+      apellido: '',
+      email: '',
+      terminos: '',
+      edad: '',
+    });
 
     handleUserRegistration(userData);
   }
@@ -101,7 +175,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
 
       <div className='max-w-[250px] md:max-w-[288px] m-auto'>
         <button
-          onClick={() => googleLogin()}
+          onClick={handleGoogleLogin}
           className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
         >
           <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
@@ -124,6 +198,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
             autoComplete='given-name'
             formData={formData}
             setFormData={setFormData}
+            error={formError.nombre}
           />
           <InputFieldForm
             name='apellido'
@@ -133,6 +208,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
             autoComplete='family-name'
             formData={formData}
             setFormData={setFormData}
+            error={formError.apellido}
           />
           <InputFieldForm
             name='email'
@@ -143,24 +219,34 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
             formData={formData}
             setFormData={setFormData}
             customClass='md:col-span-2'
+            error={formError.email}
           />
         </div>
 
-        <div className='md:flex md:gap-[12px]'>
-          <CheckboxFieldForm label='Acepto términos y condiciones del concurso.' />
-          <CheckboxFieldForm label='Certifico que tengo 18 años o más.' />
+        <div className='flex flex-col md:flex-row gap-[12px] md:gap-[12px]'>
+          <CheckboxFieldForm
+            ref={terminosRef}
+            label='Acepto términos y condiciones del concurso.'
+            isChecked={acceptTerms}
+            onChange={setAcceptTerms}
+            error={formError.terminos}
+          />
+          <CheckboxFieldForm
+            ref={edadRef}
+            label='Certifico que tengo 18 años o más.'
+            isChecked={acceptAge}
+            onChange={setAcceptAge}
+            error={formError.edad}
+          />
         </div>
 
         <p className='text-[12px] font-mono '>
           Al enviar tus datos, aceptas el tratamiento de tu información para fines de contacto y participación en el concurso.
         </p>
 
-        <button
-          type='submit'
-          className='max-w-[250px] w-full rounded-[50px] border-light-cream border py-2.5 px-[5px] bg-[rgba(143,96,166,0.20)] font-mono m-auto'
-        >
-          Enviar
-        </button>
+        <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full ${isLoading && 'cursor-not-allowed'}`}>
+          {isLoading ? 'Enviando...' : 'Enviar'}
+        </Buttons>
       </form>
     </div>
   );
@@ -175,18 +261,30 @@ interface InputFieldFormProps {
   formData: { nombre: string; apellido: string; email: string };
   setFormData: (data: { nombre: string; apellido: string; email: string }) => void;
   customClass?: string;
+  error?: string;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const InputFieldForm = ({ name, label, type = 'text', placeholder, autoComplete, formData, setFormData, customClass }: InputFieldFormProps) => {
+const InputFieldForm = ({
+  name,
+  label,
+  type = 'text',
+  placeholder,
+  autoComplete,
+  formData,
+  setFormData,
+  customClass,
+  error,
+}: InputFieldFormProps) => {
   return (
-    <div className={`font-mono ${customClass}`}>
+    <div className={`font-mono relative ${customClass}`}>
       <label htmlFor={name}>{label}</label>
+      <p className='absolute top-[5px] right-0 text-[14px]'>{error}</p>
       <input
         className='block border border-blue w-full rounded-[50px] py-[10px] px-[14px] mt-[8px]  bg-[rgba(143,96,166,0.20)]'
         type={type}
         id={name}
         name={name}
-        required
         placeholder={placeholder}
         autoComplete={autoComplete}
         value={formData[name]}
@@ -196,23 +294,31 @@ const InputFieldForm = ({ name, label, type = 'text', placeholder, autoComplete,
   );
 };
 
-const CheckboxFieldForm = ({ label }: { label: string }) => {
-  const [isChecked, setIsChecked] = useState(false);
+interface CheckboxFieldFormProps {
+  label: string;
+  isChecked: boolean;
+  onChange: (checked: boolean) => void;
+  error?: string;
+}
 
+const CheckboxFieldForm = forwardRef<HTMLDivElement, CheckboxFieldFormProps>(({ label, isChecked, onChange, error }, ref) => {
   function toggleCheckbox() {
-    setIsChecked(!isChecked);
+    onChange(!isChecked);
   }
 
   return (
-    <div onClick={toggleCheckbox} className='flex  items-center gap-2'>
-      <div
-        className={`w-[18px] h-[18px] rounded-full border  flex justify-center items-center p-0.5 ${
-          isChecked ? 'border-light-cream ' : 'border-blue '
-        } cursor-pointer`}
-      >
-        <div className={` w-full h-full rounded-full ${isChecked ? 'bg-light-cream ' : ' bg-transparent'}`}></div>
+    <div ref={ref} className='relative'>
+      <div onClick={toggleCheckbox} className='flex  items-center gap-2'>
+        <div
+          className={`w-[18px] h-[18px] rounded-full border  flex justify-center items-center p-0.5 ${
+            isChecked ? 'border-light-cream ' : 'border-blue '
+          } cursor-pointer`}
+        >
+          <div className={` w-full h-full rounded-full ${isChecked ? 'bg-light-cream ' : ' bg-transparent'}`}></div>
+        </div>
+        <p className='text-[12px] tracking-norma-[160%] font-mono'>{label}</p>
       </div>
-      <p className='text-[12px] tracking-norma-[160%] font-mono'>{label}</p>
+      <p className={`text-[12px] font-mono mt-1 ${error && ' text-red-300'}`}>{error}</p>
     </div>
   );
-};
+});

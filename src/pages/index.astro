@@ -1,5 +1,5 @@
 ---
-import Buttons from '@/components/common/Buttons.astro';
+import Buttons from '@/components/common/Buttons';
 import Layout from '../layouts/Layout.astro';
 ---
 
@@ -17,7 +17,7 @@ import Layout from '../layouts/Layout.astro';
   <div class='my-4 md:mb-[104px] md:mt-[54px] relative'>
     <img class='w-full max-h-[396px] object-cover' src='/assets/una_y_mil_noches.webp' alt='una y mil noches' />
     <div class='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-      <Buttons href='/participa'> Participa </Buttons>
+      <Buttons client:load href='/participa'> Participa </Buttons>
     </div>
   </div>
 
