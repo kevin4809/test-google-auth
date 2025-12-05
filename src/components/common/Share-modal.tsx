@@ -5,32 +5,32 @@ export default function ShareModal({ state, changeState, onNext }: { state: bool
     {
       name: 'Spotify',
       icon: '/assets/streaming/spotify.svg',
-      url: 'https://open.spotify.com/intl-es',
+      url: 'https://open.spotify.com/intl-es/track/0sBVGVFQXGDBFIz4LDQsTu?si=7bcfe620860649e8',
     },
     {
       name: 'Apple Music',
       icon: '/assets/streaming/apple_music.svg',
-      url: 'https://music.apple.com',
+      url: 'https://music.apple.com/co/song/una-y-mil-noches/1846687458',
     },
     {
       name: 'YouTube',
       icon: '/assets/streaming/youtube.svg',
-      url: 'https://music.youtube.com',
+      url: 'https://www.youtube.com/watch?v=2YN08Yj4UIk&list=RD2YN08Yj4UIk&start_radio=1',
     },
     {
       name: 'Amazon Music',
       icon: '/assets/streaming/amazon_music.svg',
-      url: 'https://music.amazon.com',
+      url: ' https://music.amazon.com/tracks/B0FWN1GVPF?marketplaceId=ART4WZ8MWBX2Y&musicTerritory=CO&ref=dm_sh_G3rQ3cOM5YCe9v5otSWkJc38',
     },
     {
       name: 'Tidal',
       icon: '/assets/streaming/tidal.svg',
-      url: 'https://tidal.com',
+      url: 'https://tidal.com/album/467441816/u',
     },
     {
       name: 'SoundCloud',
       icon: '/assets/streaming/sound_cloud.svg',
-      url: 'https://soundcloud.com',
+      url: 'https://on.soundcloud.com/LTPRlpNzh7yemamIyV',
     },
   ];
 
