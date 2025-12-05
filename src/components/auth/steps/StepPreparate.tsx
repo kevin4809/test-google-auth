@@ -13,7 +13,7 @@ export default function StepPreparate() {
 
       <div className=' mt-[54px] mb-[62px]  flex justify-center items-center flex-col md:flex-row md:gap-[22px]'>
         <a
-          href='#'
+          href='https://www.instagram.com/alejogonzalez/'
           className='border border-light-cream rounded-[50px] flex max-w-[280px] w-full justify-center items-center py-[10px] gap-[8px] bg-[rgba(143,96,166,0.20)]
 '
         >
