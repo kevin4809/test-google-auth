@@ -29,9 +29,9 @@ export default function StepPreparate() {
 
             <a
               href='/'
-              className='text-[16px] font-mono mt-[12px]  flex max-w-[280px] w-full md:text-[18px] md:mt-0 py-[10px] rounded-[50px] bg-[rgba(143,96,166,0.20)] flex justify-center items-center'
+              className='text-[16px] font-mono mt-[12px]  flex max-w-[280px] w-full md:text-[18px] md:mt-0 py-[10px] rounded-[50px]  flex justify-center items-center'
             >
-              <Buttons customClass='w-full'>Participar de nuevo</Buttons>
+              <Buttons customClass='w-full bg-[rgba(143,96,166,0.20)]'>Participar de nuevo</Buttons>
             </a>
           </div>
         </div>

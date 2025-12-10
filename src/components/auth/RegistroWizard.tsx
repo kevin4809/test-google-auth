@@ -40,6 +40,10 @@ export default function RegistroWizard({ clientId, sheetsUrl }: RegistroWizardPr
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      {/* <button className='fixed top-0 left-0 bg-amber-500 z-30' onClick={handleNextStep}>
+        pasar
+      </button> */}
+
       <div className='relative overflow-hidden '>
         <div
           className={`transition-all duration-500 ${currentStep > 1 && !isAnimating && 'absolute w-full h-full pointer-events-none  top-0 left-0'}`}
@@ -61,7 +65,7 @@ export default function RegistroWizard({ clientId, sheetsUrl }: RegistroWizardPr
 
         {currentStep > 2 && (
           <div
-            className={`transition-all duration-500 pointer-events-none ${
+            className={`transition-all duration-500  ${
               currentStep === 3 && !isAnimating
                 ? 'translate-x-0 opacity-100 pointer-events-auto'
                 : 'translate-x-full opacity-0 absolute top-0 left-0 pointer-events-none'
