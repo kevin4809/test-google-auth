@@ -13,7 +13,7 @@ export default function ShareModal({ state, changeState, onNext }: { state: bool
       url: 'https://music.apple.com/co/song/una-y-mil-noches/1846687458',
     },
     {
-      name: 'YouTube',
+      name: 'YouTube_compartir',
       icon: '/assets/streaming/youtube.svg',
       url: 'https://www.youtube.com/watch?v=2YN08Yj4UIk&list=RD2YN08Yj4UIk&start_radio=1',
     },
@@ -71,7 +71,7 @@ export default function ShareModal({ state, changeState, onNext }: { state: bool
           <button
             key={item.name}
             onClick={() => handleShare(item.name, item.url)}
-            className='flex  items-center justify-center gap-2 hover:opacity-80 transition-opacity border border-light-cream rounded-[50px] py-[13px] cursor-pointer'
+            className={`flex  items-center justify-center gap-2 hover:opacity-80 transition-opacity border border-light-cream rounded-[50px] py-[13px] cursor-pointer ${item.name}`}
           >
             <img src={item.icon} alt={item.name} className='w-[24px] h-[24px]' />
             <p className='text-[14px] font-mono'>{item.name}</p>

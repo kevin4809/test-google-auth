@@ -251,7 +251,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
               Al enviar tus datos, aceptas el tratamiento de tu información para fines de contacto y participación en el concurso.
             </p>
 
-            <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full ${isLoading && 'cursor-not-allowed'}`}>
+            <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full enviar ${isLoading && 'cursor-not-allowed'}`}>
               {isLoading ? 'Enviando...' : 'Enviar'}
             </Buttons>
           </form>

@@ -23,7 +23,7 @@ export default function StepComparte({ onNext }: { onNext: () => void }) {
           <img className='w-full max-w-[396px] m-auto' src='/assets/album.webp' alt='album' />
 
           <div className='mt-8 md:mt-[36px] flex flex-col items-center'>
-            <Buttons onClick={() => setUseModal(true)} customClass='max-w-[280px] bg-[rgba(143,96,166,0.20)]'>
+            <Buttons onClick={() => setUseModal(true)} customClass='compartir max-w-[280px] bg-[rgba(143,96,166,0.20)]'>
               Compartir
             </Buttons>
           </div>
