@@ -5,6 +5,8 @@ import type { UserData } from '@/lib/types';
 import { sendToGoogleSheets } from '@/lib/services/sheetsService';
 import Buttons from '@/components/common/Buttons';
 import { validateEmail, validateLastName, validateName } from '@/utils/validatiors';
+import Navbar from '@/components/Navbar';
+import ProgressBar from '../ProgressBar';
 
 interface StepRegistrateProps {
   onNext: (userData: UserData) => void;
@@ -164,90 +166,97 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
   }
 
   return (
-    <div className='md:max-w-[845px] m-auto'>
-      <p className='text-[32px] leading-[128%] uppercase text-center mt-8 md:text-[40px] max-w-[800px] m-auto '>
-        ¿Listo para una noche inolvidable con Alejo?
-      </p>
+    <div className='background h-[1240px] md:h-[1150px]'>
+      <div className='container_all'>
+        <Navbar />
+        <ProgressBar currentStep={1} />
 
-      <p className='text-[16px] font-mono text-center mt-[20px] md:mt-[22px] md:mb-[56px] mb-[54px] md:text-[24px] md:w-[90%] md:m-auto'>
-        Regístrate y participa por una serenata privada con Alejandro González. Solo necesitas dejar tus datos y ya estás dentro del parche.
-      </p>
+        <div className='md:max-w-[845px] m-auto'>
+          <p className='text-[32px] leading-[128%] uppercase text-center mt-8 md:text-[40px] max-w-[800px] m-auto '>
+            ¿Listo para una noche inolvidable con Alejo?
+          </p>
 
-      <div className='max-w-[250px] md:max-w-[288px] m-auto'>
-        <button
-          onClick={handleGoogleLogin}
-          className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
-        >
-          <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
-          <p className='text-[16px] font-mono md:text-[18px] '>Regístrate con Google</p>
-        </button>
+          <p className='text-[16px] font-mono text-center mt-[20px] md:mt-[22px] md:mb-[56px] mb-[54px] md:text-[24px] md:w-[90%] md:m-auto'>
+            Regístrate y participa por una serenata privada con Alejandro González. Solo necesitas dejar tus datos y ya estás dentro del parche.
+          </p>
+
+          <div className='max-w-[250px] md:max-w-[288px] m-auto'>
+            <button
+              onClick={handleGoogleLogin}
+              className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
+            >
+              <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
+              <p className='text-[16px] font-mono md:text-[18px] '>Regístrate con Google</p>
+            </button>
+          </div>
+
+          <picture>
+            <source media='(min-width: 768px)' srcSet='/assets/divisor_desktop.svg' />
+            <img src='/assets/divisor.svg' alt='divisor' className='my-[22px] md:m-auto md:py-[32px]' />
+          </picture>
+
+          <form className='flex gap-6 flex-col pb-[62px] ' onSubmit={handleFormSubmit}>
+            <div className='grid gap-6  md:grid-cols-2'>
+              <InputFieldForm
+                name='nombre'
+                label='Nombre'
+                type='text'
+                placeholder='Tu nombre'
+                autoComplete='given-name'
+                formData={formData}
+                setFormData={setFormData}
+                error={formError.nombre}
+              />
+              <InputFieldForm
+                name='apellido'
+                label='Apellido'
+                type='text'
+                placeholder='Tu apellido'
+                autoComplete='family-name'
+                formData={formData}
+                setFormData={setFormData}
+                error={formError.apellido}
+              />
+              <InputFieldForm
+                name='email'
+                label='Correo electrónico'
+                type='email'
+                placeholder='tu@email.com'
+                autoComplete='email'
+                formData={formData}
+                setFormData={setFormData}
+                customClass='md:col-span-2'
+                error={formError.email}
+              />
+            </div>
+
+            <div className='flex flex-col md:flex-row gap-[12px] md:gap-[12px]'>
+              <CheckboxFieldForm
+                ref={terminosRef}
+                label='Acepto términos y condiciones del concurso.'
+                isChecked={acceptTerms}
+                onChange={setAcceptTerms}
+                error={formError.terminos}
+              />
+              <CheckboxFieldForm
+                ref={edadRef}
+                label='Certifico que tengo 18 años o más.'
+                isChecked={acceptAge}
+                onChange={setAcceptAge}
+                error={formError.edad}
+              />
+            </div>
+
+            <p className='text-[12px] font-mono '>
+              Al enviar tus datos, aceptas el tratamiento de tu información para fines de contacto y participación en el concurso.
+            </p>
+
+            <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full ${isLoading && 'cursor-not-allowed'}`}>
+              {isLoading ? 'Enviando...' : 'Enviar'}
+            </Buttons>
+          </form>
+        </div>
       </div>
-
-      <picture>
-        <source media='(min-width: 768px)' srcSet='/assets/divisor_desktop.svg' />
-        <img src='/assets/divisor.svg' alt='divisor' className='my-[22px] md:m-auto md:py-[32px]' />
-      </picture>
-
-      <form className='flex gap-6 flex-col mb-[62px] ' onSubmit={handleFormSubmit}>
-        <div className='grid gap-6  md:grid-cols-2'>
-          <InputFieldForm
-            name='nombre'
-            label='Nombre'
-            type='text'
-            placeholder='Tu nombre'
-            autoComplete='given-name'
-            formData={formData}
-            setFormData={setFormData}
-            error={formError.nombre}
-          />
-          <InputFieldForm
-            name='apellido'
-            label='Apellido'
-            type='text'
-            placeholder='Tu apellido'
-            autoComplete='family-name'
-            formData={formData}
-            setFormData={setFormData}
-            error={formError.apellido}
-          />
-          <InputFieldForm
-            name='email'
-            label='Correo electrónico'
-            type='email'
-            placeholder='tu@email.com'
-            autoComplete='email'
-            formData={formData}
-            setFormData={setFormData}
-            customClass='md:col-span-2'
-            error={formError.email}
-          />
-        </div>
-
-        <div className='flex flex-col md:flex-row gap-[12px] md:gap-[12px]'>
-          <CheckboxFieldForm
-            ref={terminosRef}
-            label='Acepto términos y condiciones del concurso.'
-            isChecked={acceptTerms}
-            onChange={setAcceptTerms}
-            error={formError.terminos}
-          />
-          <CheckboxFieldForm
-            ref={edadRef}
-            label='Certifico que tengo 18 años o más.'
-            isChecked={acceptAge}
-            onChange={setAcceptAge}
-            error={formError.edad}
-          />
-        </div>
-
-        <p className='text-[12px] font-mono '>
-          Al enviar tus datos, aceptas el tratamiento de tu información para fines de contacto y participación en el concurso.
-        </p>
-
-        <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full ${isLoading && 'cursor-not-allowed'}`}>
-          {isLoading ? 'Enviando...' : 'Enviar'}
-        </Buttons>
-      </form>
     </div>
   );
 }

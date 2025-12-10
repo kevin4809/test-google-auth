@@ -1,7 +1,22 @@
 ---
 import Footer from '@/components/Footer.astro';
-import Navbar from '@/components/Navbar.astro';
+import Navbar from '@/components/Navbar';
 import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'Gana una serenata privada con Alejandro González | Una y Mil Noches',
+  description = 'Participa para ganar una serenata privada con Alejandro González y dedica Una y Mil Noches. Vive una experiencia única con el artista.',
+  canonical = Astro.url.pathname,
+} = Astro.props;
+
+const baseUrl = 'https://unaymilnoches.com';
+const canonicalURL = new URL(canonical, baseUrl).href;
 ---
 
 <!doctype html>
@@ -9,17 +24,16 @@ import '@/styles/global.css';
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.ico' />
     <meta name='generator' content={Astro.generator} />
-    <title>Gana una serenata privada con Alejandro González | Una y Mil Noches</title>
-    <meta
-      name='description'
-      content='Participa para ganar una serenata privada con Alejandro González y dedica Una y Mil Noches. Vive una experiencia única con el artista.'
-    />
+    <title>{title}</title>
+    <meta name='description' content={description} />
+    <meta name='robots' content='index, follow' />
+    <link rel='canonical' href={canonicalURL} />
+    <link rel='sitemap' type='application/xml' href='/sitemap.xml' />
   </head>
   <body>
-    <main class='container_all'>
-      <Navbar />
+    <main>
       <slot />
     </main>
     <Footer />
