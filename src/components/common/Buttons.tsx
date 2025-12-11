@@ -6,10 +6,11 @@ interface ButtonsProps {
   children: ReactNode;
   type?: 'button' | 'submit' | 'reset';
   customClass?: string;
-  onclick?: () => void;
+  onClick?: () => void;
+  disabled?: boolean;
 }
 
-const Buttons = ({ href = '', children, type, customClass = '', onClick }: ButtonsProps) => {
+const Buttons = ({ href = '', children, type, customClass = '', onClick, disabled = false }: ButtonsProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -61,6 +62,7 @@ const Buttons = ({ href = '', children, type, customClass = '', onClick }: Butto
     <button
       onClick={onClick}
       type={type}
+      disabled={disabled}
       className={`${baseClasses} ${paddingClasses}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

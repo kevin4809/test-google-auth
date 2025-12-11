@@ -232,10 +232,13 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
           <div className='max-w-[260px] md:max-w-[288px] m-auto'>
             <button
               onClick={handleGoogleLogin}
-              className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
+              disabled={isLoading || isFacebookLoading}
+              className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
             >
               <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
-              <p className='text-[16px] font-mono md:text-[18px] '>Regístrate con Google</p>
+              <p className='text-[16px] font-mono md:text-[18px] '>
+                {isLoading ? 'Cargando...' : 'Regístrate con Google'}
+              </p>
             </button>
 
             <button
@@ -250,7 +253,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
             >
               <img className='w-6 h-6' src='/assets/social/facebook.svg' alt='facebook' />
               <p className='text-[16px] font-mono md:text-[18px] '>
-                {isFacebookLoading ? 'Cargando...' : 'Regístrate con Facebook'}
+                {isFacebookLoading || isLoading ? 'Cargando...' : 'Regístrate con Facebook'}
              </p>
             </button>
           </div>
@@ -260,7 +263,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
             <img src='/assets/divisor.svg' alt='divisor' className='my-[22px] md:m-auto md:py-[32px]' />
           </picture>
 
-          <form className='flex gap-6 flex-col pb-[62px] ' onSubmit={handleFormSubmit}>
+          <form className='flex gap-6 flex-col mb-[62px] ' onSubmit={handleFormSubmit}>
             <div className='grid gap-6  md:grid-cols-2'>
               <InputFieldForm
                 name='nombre'
@@ -271,6 +274,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
                 formData={formData}
                 setFormData={setFormData}
                 error={formError.nombre}
+                disabled={isLoading}
               />
               <InputFieldForm
                 name='apellido'
@@ -281,6 +285,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
                 formData={formData}
                 setFormData={setFormData}
                 error={formError.apellido}
+                disabled={isLoading}
               />
               <InputFieldForm
                 name='email'
@@ -292,6 +297,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
                 setFormData={setFormData}
                 customClass='md:col-span-2'
                 error={formError.email}
+                disabled={isLoading}
               />
             </div>
 
@@ -316,6 +322,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
                 isChecked={acceptTerms}
                 onChange={setAcceptTerms}
                 error={formError.terminos}
+                disabled={isLoading}
               />
               <CheckboxFieldForm
                 ref={edadRef}
@@ -323,6 +330,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
                 isChecked={acceptAge}
                 onChange={setAcceptAge}
                 error={formError.edad}
+                disabled={isLoading}
               />
             </div>
 
@@ -330,7 +338,11 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAp
               Al enviar tus datos, aceptas el <strong>tratamiento de tu información</strong>  para fines de contacto y participación en el concurso.
             </p>
 
-            <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full enviar ${isLoading && 'cursor-not-allowed'}`}>
+            <Buttons
+              type='submit'
+              disabled={isLoading}
+              customClass={`max-w-[250px] m-auto w-full enviar ${isLoading && 'cursor-not-allowed opacity-50'}`}
+            >
               {isLoading ? 'Enviando...' : 'Enviar'}
             </Buttons>
           </form>
@@ -351,6 +363,7 @@ interface InputFieldFormProps {
   customClass?: string;
   error?: string;
   ref?: React.Ref<HTMLDivElement>;
+  disabled?: boolean;
 }
 
 const InputFieldForm = ({
@@ -363,13 +376,14 @@ const InputFieldForm = ({
   setFormData,
   customClass,
   error,
+  disabled,
 }: InputFieldFormProps) => {
   return (
     <div className={`font-mono relative ${customClass}`}>
       <label htmlFor={name}>{label}</label>
       <p className='absolute top-[5px] right-0 text-[14px]'>{error}</p>
       <input
-        className='block border border-blue w-full rounded-[50px] py-[10px] px-[14px] mt-[8px]  bg-[rgba(143,96,166,0.20)]'
+        className='block border border-blue w-full rounded-[50px] py-[10px] px-[14px] mt-[8px]  bg-[rgba(143,96,166,0.20)] disabled:opacity-50 disabled:cursor-not-allowed'
         type={type}
         id={name}
         name={name}
@@ -377,6 +391,7 @@ const InputFieldForm = ({
         autoComplete={autoComplete}
         value={formData[name]}
         onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
+        disabled={disabled}
       />
     </div>
   );
@@ -387,20 +402,23 @@ interface CheckboxFieldFormProps {
   isChecked: boolean;
   onChange: (checked: boolean) => void;
   error?: string;
+  disabled?: boolean;
 }
 
-const CheckboxFieldForm = forwardRef<HTMLDivElement, CheckboxFieldFormProps>(({ label, isChecked, onChange, error }, ref) => {
+const CheckboxFieldForm = forwardRef<HTMLDivElement, CheckboxFieldFormProps>(({ label, isChecked, onChange, error, disabled }, ref) => {
   function toggleCheckbox() {
-    onChange(!isChecked);
+    if (!disabled) {
+      onChange(!isChecked);
+    }
   }
 
   return (
     <div ref={ref} className='relative'>
-      <div onClick={toggleCheckbox} className='flex  items-center gap-2'>
+      <div onClick={toggleCheckbox} className={`flex items-center gap-2 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
         <div
           className={`w-[18px] h-[18px] rounded-full border  flex justify-center items-center p-0.5 ${
             isChecked ? 'border-light-cream ' : 'border-blue '
-          } cursor-pointer`}
+          } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         >
           <div className={` w-full h-full rounded-full ${isChecked ? 'bg-light-cream ' : ' bg-transparent'}`}></div>
         </div>

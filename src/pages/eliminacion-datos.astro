@@ -1,0 +1,116 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/Navbar';
+import Buttons from '@/components/common/Buttons';
+---
+
+<Layout title='Procedimiento de Eliminación de Datos | Una y Mil Noches'>
+  <div class='background min-h-screen'>
+    <div class='container_all'>
+      <Navbar client:load />
+
+      <div class='max-w-[900px] mx-auto px-4 py-8 md:py-12'>
+        <!-- Logo FM (opcional) -->
+        <div class='flex justify-center mb-8'>
+          <div class='w-24 h-24 flex items-center justify-center'>
+            <!-- Puedes agregar el logo de FM aquí si lo tienes -->
+          </div>
+        </div>
+
+        <h1 class='text-[40px] md:text-[56px] leading-tight text-center uppercase mb-8'>
+          Procedimiento de Eliminación de Datos de Usuario
+        </h1>
+
+        <h2 class='text-[24px] md:text-[32px] font-mono text-center mb-12'>
+          Instrucciones para solicitar la eliminación de datos personales
+        </h2>
+
+        <div class='space-y-8 text-[16px] md:text-[18px] font-mono'>
+          <p class='leading-relaxed'>
+            De acuerdo con las políticas de Facebook y las regulaciones de protección de datos, ponemos a disposición
+            de todos los usuarios un mecanismo claro y directo para solicitar la eliminación de sus datos asociados al
+            evento.
+          </p>
+
+          <section class='space-y-4'>
+            <h3 class='text-[20px] md:text-[24px] font-bold'>Eliminación de datos desde Facebook</h3>
+            <p class='leading-relaxed'>
+              Si deseas eliminar los datos que nuestra aplicación tiene asociados a tu cuenta de Facebook, sigue estos
+              pasos:
+            </p>
+            <ol class='list-decimal list-inside space-y-3 ml-4'>
+              <li>Inicia sesión en tu cuenta de Facebook.</li>
+              <li>Ve a <strong>Configuración y privacidad → Configuración</strong>.</li>
+              <li>Selecciona <strong>Apps y sitios web</strong>.</li>
+              <li>Busca la aplicación <strong>"Alejandro-gonzalez"</strong>.</li>
+              <li>Haz clic en <strong>Eliminar</strong>.</li>
+              <li>Activa la opción <strong>"Eliminar también los datos que la aplicación ha recibido de Facebook"</strong>.</li>
+              <li>Confirma la eliminación.</li>
+            </ol>
+            <p class='leading-relaxed mt-4'>
+              Esto revocará todos los permisos y borrará los datos asociados a tu cuenta de Facebook.
+            </p>
+          </section>
+
+          <section class='space-y-4 mt-12 pt-8 border-t border-light-cream/20'>
+            <h3 class='text-[20px] md:text-[24px] font-bold'>1. ¿Qué datos recopilamos?</h3>
+            <p class='leading-relaxed'>
+              Los datos proporcionados voluntariamente por los usuarios a través del formulario del evento (nombre,
+              correo electrónico y cualquier otro dato indicado).
+            </p>
+          </section>
+
+          <section class='space-y-4'>
+            <h3 class='text-[20px] md:text-[24px] font-bold'>2. ¿Cómo solicitar la eliminación de tus datos?</h3>
+            <p class='leading-relaxed'>
+              Envía un correo a{' '}
+              <a href='mailto:datospersonales@fm.com' class='text-light-cream underline hover:text-light-cream/80'>
+                datospersonales@fm.com
+              </a>{' '}
+              con el asunto "Solicitud de Eliminación de Datos".
+            </p>
+            <p class='font-bold'>Incluye:</p>
+            <ul class='list-disc list-inside space-y-2 ml-4'>
+              <li>Nombre completo</li>
+              <li>Correo registrado</li>
+              <li>Solicitud explícita de eliminación</li>
+            </ul>
+          </section>
+
+          <section class='space-y-4'>
+            <h3 class='text-[20px] md:text-[24px] font-bold'>3. Tiempo de respuesta</h3>
+            <p class='leading-relaxed'>
+              La solicitud será atendida en un plazo máximo de 10 días hábiles y recibirás confirmación por correo.
+            </p>
+          </section>
+
+          <section class='space-y-4'>
+            <h3 class='text-[20px] md:text-[24px] font-bold'>4. Consecuencias de la eliminación</h3>
+            <p class='leading-relaxed'>
+              Al eliminar tus datos, no podremos contactarte ni mantener tu registro para actividades relacionadas.
+            </p>
+          </section>
+
+          <div class='text-center mt-12 pt-8 border-t border-light-cream/20'>
+            <p class='text-[18px] md:text-[20px] font-bold'>FM Entretenimiento</p>
+          </div>
+        </div>
+
+        <div class='flex justify-center mt-12'>
+          <Buttons client:load href='/' customClass='max-w-[250px]'>Volver al inicio</Buttons>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .background {
+    background: linear-gradient(180deg, #1a0b2e 0%, #16213e 100%);
+    color: #f5f5f5;
+  }
+
+  .text-light-cream {
+    color: #f5deb3;
+  }
+</style>

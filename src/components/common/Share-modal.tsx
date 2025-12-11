@@ -13,7 +13,7 @@ export default function ShareModal({ state, changeState, onNext }: { state: bool
       url: 'https://music.apple.com/co/song/una-y-mil-noches/1846687458',
     },
     {
-      name: 'YouTube_compartir',
+      name: 'YouTube',
       icon: '/assets/streaming/youtube.svg',
       url: 'https://www.youtube.com/watch?v=2YN08Yj4UIk&list=RD2YN08Yj4UIk&start_radio=1',
     },

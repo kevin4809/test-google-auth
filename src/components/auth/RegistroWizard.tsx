@@ -46,7 +46,7 @@ export default function RegistroWizard({ clientId, sheetsUrl, facebookAppId }: R
         pasar
       </button> */}
 
-      <div className='relative overflow-hidden pi'>
+      <div className='relative overflow-hidden'>
         <div
           className={`transition-all duration-500 ${currentStep > 1 && !isAnimating && 'absolute w-full h-full pointer-events-none  top-0 left-0'}`}
         >
