@@ -38,23 +38,33 @@ body {
 }
 
 .background {
-  background-image: url('/assets/background.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  /* Removido background-attachment: fixed para mejor performance */
+  background-image: url('/assets/background-optimized.webp'), url('/assets/background.png');
+  image-rendering: crisp-edges;
 }
 
-@media (min-width: 768px) {
-  /* html,
-  body {
-    background-image: url('/assets/bg1.jpeg');
-    background-size: cover;
-  } */
-
+/* Background responsive para móvil retina */
+@media (max-width: 767px) and (-webkit-min-device-pixel-ratio: 2), (max-width: 767px) and (min-resolution: 192dpi) {
   .background {
-    background-image: url('/assets/bg1.jpeg');
+    background-image: url('/assets/background-optimized@2x.webp'), url('/assets/background.png');
+  }
+}
+
+/* Background para desktop */
+@media (min-width: 768px) {
+  .background {
+    background-image: url('/assets/bg1-optimized.webp'), url('/assets/bg1.jpeg');
     background-size: cover;
+  }
+}
+
+/* Background para desktop retina */
+@media (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), (min-width: 768px) and (min-resolution: 192dpi) {
+  .background {
+    background-image: url('/assets/bg1-optimized@2x.webp'), url('/assets/bg1.jpeg');
   }
 }
 

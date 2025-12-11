@@ -46,6 +46,38 @@ const canonicalURL = new URL(canonical, baseUrl).href;
     <meta name='robots' content='noindex, nofollow' />
     <link rel='canonical' href={canonicalURL} />
     <link rel='sitemap' type='application/xml' href='/sitemap.xml' />
+
+    <!-- Preload critical background images (WebP optimized) -->
+    <link
+      rel='preload'
+      as='image'
+      href='/assets/background-optimized.webp'
+      type='image/webp'
+      media='(max-width: 767px)'
+      fetchpriority='high'
+    />
+    <link
+      rel='preload'
+      as='image'
+      href='/assets/bg1-optimized.webp'
+      type='image/webp'
+      media='(min-width: 768px)'
+      fetchpriority='high'
+    />
+    <link
+      rel='preload'
+      as='image'
+      href='/assets/background_footer.webp'
+      type='image/webp'
+      media='(max-width: 767px)'
+    />
+    <link
+      rel='preload'
+      as='image'
+      href='/assets/background_mobile_desktop.webp'
+      type='image/webp'
+      media='(min-width: 768px)'
+    />
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
