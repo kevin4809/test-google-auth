@@ -7,16 +7,18 @@ import Buttons from '@/components/common/Buttons';
 import { validateEmail, validateLastName, validateName } from '@/utils/validatiors';
 import Navbar from '@/components/Navbar';
 import ProgressBar from '../ProgressBar';
+import { useFacebookLogin } from '@/hooks/useFacebookLogin';
 
 interface StepRegistrateProps {
   onNext: (userData: UserData) => void;
   clientId: string;
   sheetsUrl: string;
+  facebookAppId: string;
 }
 
 const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0LSG9bUq8iH4cxf5GTFfWgrWMBu2LiES0o2IVuFqfX_ez_moMs0mXtTkO8TRO3Mrmvw/exec';
 
-export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegistrateProps) {
+export default function StepRegistrate({ onNext, clientId, sheetsUrl, facebookAppId }: StepRegistrateProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [registeredUser, setRegisteredUser] = useState<UserData | null>(null);
   const [formData, setFormData] = useState({
@@ -38,6 +40,22 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
 
   const terminosRef = useRef<HTMLDivElement>(null);
   const edadRef = useRef<HTMLDivElement>(null);
+
+  const { login: facebookLogin, isLoading: isFacebookLoading } = useFacebookLogin({
+    appId: facebookAppId,
+    onSuccess: (user) => {
+      const userData: UserData = {
+        nombre: user.first_name || '',
+        apellido: user.last_name || '',
+        email: user.email || '',
+      };
+      handleUserRegistration(userData);
+    },
+    onError: (error) => {
+      console.error('Error al iniciar sesión con Facebook:', error);
+      alert('Error al iniciar sesión con Facebook. Por favor, intenta nuevamente.');
+    },
+  });
 
   useEffect(() => {
     if (registeredUser) {
@@ -100,6 +118,37 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
     });
 
     googleLogin();
+  }
+
+  function handleFacebookLogin() {
+    const terminosError = !acceptTerms ? 'Debes aceptar los términos y condiciones' : '';
+    const edadError = !acceptAge ? 'Debes certificar que tienes 18 años o más' : '';
+
+    if (terminosError || edadError) {
+      setFormError({
+        ...formError,
+        terminos: terminosError,
+        edad: edadError,
+      });
+
+      setTimeout(() => {
+        if (terminosError && terminosRef.current) {
+          terminosRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (edadError && edadRef.current) {
+          edadRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
+      return false;
+    }
+
+    setFormError({
+      ...formError,
+      terminos: '',
+      edad: '',
+    });
+
+    return true;
   }
 
   async function handleUserRegistration(data: UserData) {
@@ -166,7 +215,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
   }
 
   return (
-    <div className='background h-[1240px] md:h-[1150px]'>
+    <div className='background h-[1280px] md:h-[1150px]'>
       <div className='container_all'>
         <Navbar />
         <ProgressBar currentStep={1} />
@@ -177,16 +226,32 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
           </p>
 
           <p className='text-[16px] font-mono text-center mt-[20px] md:mt-[22px] md:mb-[56px] mb-[54px] md:text-[24px] md:w-[90%] md:m-auto'>
-            Regístrate y participa por una serenata privada con Alejandro González. Solo necesitas dejar tus datos y ya estás dentro del parche.
+            Regístrate y participa por una <span className='font-[600]'> serenata privada con Alejandro González.</span> Solo necesitas dejar tus datos y ya estás dentro del parche.
           </p>
 
-          <div className='max-w-[250px] md:max-w-[288px] m-auto'>
+          <div className='max-w-[260px] md:max-w-[288px] m-auto'>
             <button
               onClick={handleGoogleLogin}
               className='border border-light-cream flex justify-center items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors'
             >
               <img className='w-6 h-6' src='/assets/social/google.svg' alt='google' />
               <p className='text-[16px] font-mono md:text-[18px] '>Regístrate con Google</p>
+            </button>
+
+            <button
+              type='button'
+              onClick={() => {
+                if (handleFacebookLogin()) {
+                  facebookLogin();
+                }
+              }}
+              disabled={isFacebookLoading || isLoading}
+              className='border border-light-cream flex justify-center mt-[20px] items-center gap-1 rounded-[50px] py-2.5 px-1 w-full cursor-pointer hover:bg-light-cream/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              <img className='w-6 h-6' src='/assets/social/facebook.svg' alt='facebook' />
+              <p className='text-[16px] font-mono md:text-[18px] '>
+                {isFacebookLoading ? 'Cargando...' : 'Regístrate con Facebook'}
+             </p>
             </button>
           </div>
 
@@ -233,7 +298,21 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
             <div className='flex flex-col md:flex-row gap-[12px] md:gap-[12px]'>
               <CheckboxFieldForm
                 ref={terminosRef}
-                label='Acepto términos y condiciones del concurso.'
+                label={
+                  <>
+                    Acepto{' '}
+                    <a
+                      href='/docs/TYC.pdf'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='font-bold underline hover:text-light-cream'
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      términos y condiciones
+                    </a>{' '}
+                    del concurso.
+                  </>
+                }
                 isChecked={acceptTerms}
                 onChange={setAcceptTerms}
                 error={formError.terminos}
@@ -248,7 +327,7 @@ export default function StepRegistrate({ onNext, clientId, sheetsUrl }: StepRegi
             </div>
 
             <p className='text-[12px] font-mono '>
-              Al enviar tus datos, aceptas el tratamiento de tu información para fines de contacto y participación en el concurso.
+              Al enviar tus datos, aceptas el <strong>tratamiento de tu información</strong>  para fines de contacto y participación en el concurso.
             </p>
 
             <Buttons type='submit' customClass={`max-w-[250px] m-auto w-full enviar ${isLoading && 'cursor-not-allowed'}`}>
@@ -304,7 +383,7 @@ const InputFieldForm = ({
 };
 
 interface CheckboxFieldFormProps {
-  label: string;
+  label: string | React.ReactNode;
   isChecked: boolean;
   onChange: (checked: boolean) => void;
   error?: string;

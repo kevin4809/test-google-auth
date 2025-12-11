@@ -8,11 +8,13 @@ import StepPreparate from './steps/StepPreparate';
 interface RegistroWizardProps {
   clientId: string;
   sheetsUrl: string;
+  facebookAppId: string;
 }
 
 const GOOGLE_CLIENT_ID = '593546219802-r7ipaalg4qncb4af4e4rfarg9n052hf6.apps.googleusercontent.com';
+const FACEBOOK_APP_ID = '2004910353697198';
 
-export default function RegistroWizard({ clientId, sheetsUrl }: RegistroWizardProps) {
+export default function RegistroWizard({ clientId, sheetsUrl, facebookAppId }: RegistroWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -44,11 +46,11 @@ export default function RegistroWizard({ clientId, sheetsUrl }: RegistroWizardPr
         pasar
       </button> */}
 
-      <div className='relative overflow-hidden '>
+      <div className='relative overflow-hidden pi'>
         <div
           className={`transition-all duration-500 ${currentStep > 1 && !isAnimating && 'absolute w-full h-full pointer-events-none  top-0 left-0'}`}
         >
-          <StepRegistrate onNext={handleNextStep} clientId={clientId} sheetsUrl={sheetsUrl} />
+          <StepRegistrate onNext={handleNextStep} clientId={clientId} sheetsUrl={sheetsUrl} facebookAppId={FACEBOOK_APP_ID} />
         </div>
 
         <div
